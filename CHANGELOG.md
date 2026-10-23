@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- Export `model.json` in `idyntree-model-json` format alongside `model.urdf`, using a JSON-enabled iDynTree 15.0.1 vcpkg overlay.
 - Added `includes` parameter to `creo2urdf` to include additional yamls.
 
 ## [0.4.7] - 2024-04-09

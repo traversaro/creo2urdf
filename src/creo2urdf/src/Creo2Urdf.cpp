@@ -557,7 +557,19 @@ void Creo2Urdf::runExport() {
         export_options.xmlBlobs.push_back(gazebo_pose_xml_str);
     }
 
-    exportModelToUrdf(idyn_model, export_options);
+    // Dump the native model before the URDF exporter moves link frames or
+    // represents spherical joints and additional frames with URDF-only links.
+    iDynTree::ModelExporter json_exporter;
+    if (!json_exporter.init(idyn_model) ||
+        !json_exporter.exportModelToFile(m_output_path + "\\model.json", "idyntree-model-json")) {
+        printToMessageWindow("Error exporting model.json. See iDynTreeErrors.txt for details", c2uLogLevel::WARN);
+        return;
+    }
+    printToMessageWindow("model.json created successfully!");
+
+    if (!exportModelToUrdf(idyn_model, export_options)) {
+        return;
+    }
 
     // Let's clear the map in case of multiple click TODO UNIFY
     m_yaml_path.clear();
