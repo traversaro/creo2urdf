@@ -643,28 +643,12 @@ bool Creo2Urdf::exportModelToUrdf(iDynTree::Model mdl, iDynTree::ModelExporterOp
     // Convert modelToExport in a URDF-compatible model (using the default base link)
     iDynTree::Model modelToExportURDFCompatible;
 
-    if (m_need_to_move_link_frames_to_be_compatible_with_URDF) {
-        // The frame-moving helper handles revolute/prismatic joints, so expand
-        // spherical joints on this URDF-only copy before moving link frames.
-        if (options.exportSphericalJointsAsThreeRevoluteJoints) {
-            iDynTree::Model modelWithConvertedSphericalJoints;
-            if (!iDynTree::convertSphericalJointsToThreeRevoluteJoints(
-                mdl, modelWithConvertedSphericalJoints,
-                options.sphericalJointFakeLinkPrefix, options.sphericalJointRevoluteJointPrefix)) {
-                printToMessageWindow("Failed to convert spherical joints for URDF export", c2uLogLevel::WARN);
-                return false;
-            }
-            mdl = modelWithConvertedSphericalJoints;
-            options.exportSphericalJointsAsThreeRevoluteJoints = false;
-        }
+    {
         bool ok = iDynTree::moveLinkFramesToBeCompatibleWithURDFWithGivenBaseLink(mdl, modelToExportURDFCompatible);
         if (!ok) {
             printToMessageWindow("Failed to move link frames to be URDF compatible", c2uLogLevel::WARN);
             return false;
         }
-    }
-    else {
-        modelToExportURDFCompatible = mdl;
     }
 
     mdl_exporter.init(modelToExportURDFCompatible);
